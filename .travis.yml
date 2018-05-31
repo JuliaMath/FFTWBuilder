@@ -1,0 +1,45 @@
+language: julia
+os:
+- linux
+julia:
+- 0.6
+notifications:
+  email: false
+git:
+  depth: 99999999
+cache:
+  timeout: 1000
+  directories:
+  - downloads
+env:
+  global:
+  - BINARYBUILDER_DOWNLOADS_CACHE=downloads
+  - BINARYBUILDER_AUTOMATIC_APPLE=true
+  # Our build takes too long for one job, so split targets across multiple jobs
+  matrix:
+    - PART=1/3
+    - PART=2/3
+    - PART=3/3
+sudo: required
+jobs:
+  include:
+    - stage: regenerate build.jl
+      script: julia build_tarballs.jl --only-buildjl
+      if: tag IS present
+before_script:
+- julia -e 'Pkg.clone("https://github.com/JuliaPackaging/BinaryProvider.jl")'
+- julia -e 'Pkg.clone("https://github.com/stevengj/BinaryBuilder.jl"); Pkg.checkout("BinaryBuilder", "part"); Pkg.build()'
+script:
+- julia build_tarballs.jl --part=$PART
+deploy:
+  provider: releases
+  api_key:
+      # Note; this api_key is only valid for JuliaInterop/ZMQBuilder; you need
+      # to make your own: https://docs.travis-ci.com/user/deployment/releases/
+    secure: aX1BM+cltrkmoM0Kolx6I38NzBSGBzlyWyN+jWT2XrGhaTNmSTK5hGOVviq17cY3eX6OYPrB5X0L8h+DjnPukSDE9QpPFJ9TMQ9rhwCaqk9Lgm+GnWE5tTreoVIa292v80jMwBDa+g7wXZAm5L93pCinBBefwoJzSESVXfDSA4CuvYreSRi9q2HF3tk/8cS8u9nsmdTPrViY9XyVPEjidpBGdnAw0pql16YwsHfzOSYLL4BfqPyOIMlAGeixtYwFc7ABTVMk4R+zBzJpvKiOZW09Q2P7TcRGZYVpyCl2Fwk9ty5EJ298EV/KfBt/WTk6jCXw65zYWR1rcS4VYu3ozt07QYg7MrA04S9oi07iE+qNWzIowuKcbMfCxuUgVssH44K6RXzarUegU23V9WAGOzQFxaLfhG06fxGRhtkR15U1KMH5ag/AiAJXosSfg7FJBMoAijLfcsprHT9odZMDilcHDJ4aqB2h3w9oEF9ByAkNNECv+/koWXw+FgFWu5EP9G8WBRlHHuKGBjZc6Ke2bZr4S44QB++a0vXBhIc/gAOlZR11snYLCSkvhIyTrM/3lJmfWoe6f1fmTDYlRUCXvL5SMfAFk6JoZb4D3biPAEA81X9HVGRH+gO6ObhM9e+49jCmYhXPs90w5E+Pvqax6KEpCW7f7S+yvzLucSStkIM=
+  file_glob: true
+  file: products/*
+  skip_cleanup: true
+  on:
+    repo: JuliaInterop/ZMQBuilder
+    tags: true
