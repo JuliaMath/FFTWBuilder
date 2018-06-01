@@ -11,7 +11,8 @@ script = raw"""
 cd $WORKSPACE/srcdir/fftw-3.3.8
 config="--prefix=$prefix --host=${target} --enable-shared --disable-static --disable-fortran --disable-mpi"
 
-if [[ $target == x86_64-*  ]] || [[ $target == i686-* ]]; then config="$config --enable-sse2 --enable-avx2 --enable-avx512"; fi
+if [[ $target == x86_64-*  ]] || [[ $target == i686-* ]]; then config="$config --enable-sse2 --enable-avx2"; fi
+# todo: --enable-avx512 on x86_64?
 if [[ $target == aarch64-* ]]; then config="$config --enable-neon"; fi
 
 # FreeBSD threads are problematic: BinaryBuilder.jl#232
