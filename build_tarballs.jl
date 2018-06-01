@@ -9,7 +9,7 @@ sources = [
 # Bash recipe for building across all platforms
 script = raw"""
 cd $WORKSPACE/srcdir/fftw-3.3.8
-config="--prefix=$prefix --host=${target} --enable-shared --disable-static --disable-fortran --disable-mpi"
+config="--prefix=$prefix --host=${target} --enable-shared --disable-static --disable-fortran --disable-mpi --disable-doc"
 
 if [[ $target == x86_64-*  ]] || [[ $target == i686-* ]]; then config="$config --enable-sse2 --enable-avx2"; fi
 # todo: --enable-avx512 on x86_64?
@@ -23,7 +23,7 @@ if [[ $target == i686-w64-* ]]; then config="$config --with-incoming-stack-bound
 
 mkdir double && cd double
 ../configure $config
-perl -pi -e "s/doc tools m4/doc m4/" Makefile # work around FFTW/fftw3#146
+perl -pi -e "s/tools m4/m4/" Makefile # work around FFTW/fftw3#146
 make install
 cd ..
 
@@ -31,7 +31,7 @@ if [[ $target == powerpc64le-*  ]]; then config="$config --enable-altivec"; fi
 if [[ $target == arm-*  ]]; then config="$config --enable-neon"; fi
 mkdir single && cd single
 ../configure $config --enable-single
-perl -pi -e "s/doc tools m4/doc m4/" Makefile # work around FFTW/fftw3#146
+perl -pi -e "s/tools m4/m4/" Makefile # work around FFTW/fftw3#146
 make install
 """
 
