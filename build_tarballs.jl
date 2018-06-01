@@ -21,14 +21,14 @@ if [[ $target == *-w64-* ]]; then config="$config --with-our-malloc"; fi
 if [[ $target == i686-w64-* ]]; then config="$config --with-incoming-stack-boundary=2"; fi
 
 mkdir double && cd double
-./configure $config
+../configure $config
 make && make install
 cd ..
 
 if [[ $target == powerpc64le-*  ]]; then config="$config --enable-altivec"; fi
 if [[ $target == arm-*  ]]; then config="$config --enable-neon"; fi
 mkdir single && cd single
-./configure $config --enable-single
+../configure $config --enable-single
 make && make install
 """
 
