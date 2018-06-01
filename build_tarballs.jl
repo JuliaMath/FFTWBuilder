@@ -23,14 +23,16 @@ if [[ $target == i686-w64-* ]]; then config="$config --with-incoming-stack-bound
 
 mkdir double && cd double
 ../configure $config
-make && make install
+perl -pi -e "s/doc tools m4/doc m4/" Makefile # work around FFTW/fftw3#146
+make install
 cd ..
 
 if [[ $target == powerpc64le-*  ]]; then config="$config --enable-altivec"; fi
 if [[ $target == arm-*  ]]; then config="$config --enable-neon"; fi
 mkdir single && cd single
 ../configure $config --enable-single
-make && make install
+perl -pi -e "s/doc tools m4/doc m4/" Makefile # work around FFTW/fftw3#146
+make install
 """
 
 # These are the platforms we will build for by default, unless further
