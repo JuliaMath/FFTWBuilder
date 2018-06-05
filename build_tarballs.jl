@@ -9,14 +9,11 @@ sources = [
 # Bash recipe for building across all platforms
 script = raw"""
 cd $WORKSPACE/srcdir/fftw-3.3.8
-config="--prefix=$prefix --host=${target} --enable-shared --disable-static --disable-fortran --disable-mpi --disable-doc"
+config="--prefix=$prefix --host=${target} --enable-shared --disable-static --disable-fortran --disable-mpi --disable-doc --enable-threads --with-combined-threads"
 
 if [[ $target == x86_64-*  ]] || [[ $target == i686-* ]]; then config="$config --enable-sse2 --enable-avx2"; fi
 # todo: --enable-avx512 on x86_64?
 if [[ $target == aarch64-* ]]; then config="$config --enable-neon"; fi
-
-# FreeBSD threads are problematic: BinaryBuilder.jl#232
-if [[ $target != *-freebsd*  ]]; then config="$config --enable-threads --with-combined-threads"; fi
 
 if [[ $target == *-w64-* ]]; then config="$config --with-our-malloc"; fi
 if [[ $target == i686-w64-* ]]; then config="$config --with-incoming-stack-boundary=2"; fi
