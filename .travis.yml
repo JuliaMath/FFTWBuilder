@@ -2,7 +2,7 @@ language: julia
 os:
 - linux
 julia:
-- 0.6
+- 1.0
 notifications:
   email: false
 git:
@@ -29,8 +29,7 @@ jobs:
     script: julia build_tarballs.jl --only-buildjl
     if: tag IS present
 before_script:
-- julia -e 'Pkg.clone("https://github.com/JuliaPackaging/BinaryProvider.jl")'
-- julia -e 'Pkg.clone("https://github.com/JuliaPackaging/BinaryBuilder.jl"); Pkg.build()'
+- julia -e 'using Pkg; pkg"add BinaryProvider"; pkg"add BinaryBuilder"; Pkg.build()'
 script:
 - julia build_tarballs.jl --part=$PART
 deploy:
