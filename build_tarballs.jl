@@ -13,10 +13,12 @@ config="--prefix=$prefix --host=${target} --enable-shared --disable-static --dis
 
 if [[ $target == x86_64-*  ]] || [[ $target == i686-* ]]; then config="$config --enable-sse2 --enable-avx2"; fi
 # todo: --enable-avx512 on x86_64?
-if [[ $target == aarch64-* ]]; then
-    config="$config --enable-neon"
-    CC="${CC} -mfpu=neon"
-fi
+
+# Neon is no longer available on BinaryBuilder?
+# if [[ $target == aarch64-* ]]; then
+#    config="$config --enable-neon"
+#    CC="${CC} -mfpu=neon"
+# fi
 
 if [[ $target == *-w64-* ]]; then config="$config --with-our-malloc"; fi
 if [[ $target == i686-w64-* ]]; then config="$config --with-incoming-stack-boundary=2"; fi
