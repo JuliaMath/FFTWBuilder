@@ -23,9 +23,15 @@ if [[ $target == x86_64-*  ]] || [[ $target == i686-* ]]; then config="$config -
 if [[ $target == *-w64-* ]]; then config="$config --with-our-malloc"; fi
 if [[ $target == i686-w64-* ]]; then config="$config --with-incoming-stack-boundary=2"; fi
 
+# work around GNU binutils problem on MacOS (see PR #1)
+if [[ ${target} == *darwin* ]]; then
+    export RANLIB=llvm-ranlib
+fi
+
 mkdir double && cd double
 ../configure $config
 perl -pi -e "s/tools m4/m4/" Makefile # work around FFTW/fftw3#146
+make -j${nprocs}
 make install
 cd ..
 
@@ -34,6 +40,7 @@ if [[ $target == arm-*  ]]; then config="$config --enable-neon"; fi
 mkdir single && cd single
 ../configure $config --enable-single
 perl -pi -e "s/tools m4/m4/" Makefile # work around FFTW/fftw3#146
+make -j${nprocs}
 make install
 """
 
